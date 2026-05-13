@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ads/navigation_ads.dart';
 import 'device_compatibility_screen.dart';
 import 'format_checker_screen.dart';
 import 'network_speed_screen.dart';
@@ -64,9 +65,9 @@ class ToolsHubScreen extends StatelessWidget {
               style: TextStyle(color: Colors.white.withValues(alpha: 0.65)),
             ),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => e.page),
-            ),
+            onTap: () async {
+              await pushToolRoute(context, e.page);
+            },
           ),
         );
       },

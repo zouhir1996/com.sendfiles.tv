@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ads/navigation_ads.dart';
 import '../theme/app_colors.dart';
 import 'device_compatibility_screen.dart';
 import 'format_checker_screen.dart';
@@ -45,9 +46,9 @@ class HomeDashboard extends StatelessWidget {
         Text(
           'Key features',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 14),
         GridView.count(
@@ -89,8 +90,8 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 
-  void _open(BuildContext context, Widget page) {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+  Future<void> _open(BuildContext context, Widget page) async {
+    await pushToolRoute(context, page);
   }
 }
 
@@ -113,10 +114,7 @@ class _WelcomeCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1565C0),
-            Color(0xFF29B6F6),
-          ],
+          colors: [Color(0xFF1565C0), Color(0xFF29B6F6)],
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [

@@ -141,7 +141,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     IconButton(
                       onPressed: _next,
-                      icon: const Icon(Icons.chevron_right, color: Colors.white),
+                      icon: const Icon(
+                        Icons.chevron_right,
+                        color: Colors.white,
+                      ),
                       iconSize: 36,
                       padding: EdgeInsets.zero,
                     ),

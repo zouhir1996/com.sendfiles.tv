@@ -2,7 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../ads/ad_service.dart';
 import '../app.dart';
+
+Future<void> confirmResetOnboarding(BuildContext context) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Show intro again?'),
+      content: const Text(
+        'The next time you launch the app from a cold start, the intro screens will appear. '
+        'You can still skip them.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Reset'),
+        ),
+      ],
+    ),
+  );
+  if (ok != true || !context.mounted) return;
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove(kOnboardingCompleteKey);
+  if (!context.mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Intro reset. Quit the app completely, then reopen.'),
+    ),
+  );
+}
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -44,41 +77,13 @@ class SettingsScreen extends StatelessWidget {
             subtitle: const Text(
               'Clears the intro completion flag. Fully quit and reopen the app to see onboarding.',
             ),
-            onTap: () => _confirmResetOnboarding(context),
+            onTap: () async {
+              await AdService.instance.showInterstitialIfReady();
+              if (!context.mounted) return;
+              await confirmResetOnboarding(context);
+            },
           ),
         ],
-      ),
-    );
-  }
-
-  Future<void> _confirmResetOnboarding(BuildContext context) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Show intro again?'),
-        content: const Text(
-          'The next time you launch the app from a cold start, the intro screens will appear. '
-          'You can still skip them.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Reset'),
-          ),
-        ],
-      ),
-    );
-    if (ok != true || !context.mounted) return;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(kOnboardingCompleteKey);
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Intro reset. Quit the app completely, then reopen.'),
       ),
     );
   }
@@ -96,9 +101,9 @@ class _SectionHeader extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Colors.white70,
-              fontWeight: FontWeight.w600,
-            ),
+          color: Colors.white70,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

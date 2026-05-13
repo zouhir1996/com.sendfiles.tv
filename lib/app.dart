@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'ads/ad_service.dart';
 import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/splash_screen.dart';
@@ -17,25 +18,29 @@ class SendFilesToTvApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Send files to TV',
-      debugShowCheckedModeBanner: false,
-      theme: buildAppTheme(),
-      home: SplashScreen(
-        onFinished: (context) {
-          final completed = prefs.getBool(kOnboardingCompleteKey) ?? false;
-          final Widget next =
-              completed ? const MainShell() : OnboardingScreen(prefs: prefs);
-          Navigator.of(context).pushReplacement(
-            PageRouteBuilder<void>(
-              pageBuilder: (context, animation, secondaryAnimation) => next,
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 450),
-            ),
-          );
-        },
+    return AppOpenLifecycleObserver(
+      child: MaterialApp(
+        title: 'Send files to TV',
+        debugShowCheckedModeBanner: false,
+        theme: buildAppTheme(),
+        home: SplashScreen(
+          onFinished: (context) {
+            final completed = prefs.getBool(kOnboardingCompleteKey) ?? false;
+            final Widget next = completed
+                ? const MainShell()
+                : OnboardingScreen(prefs: prefs);
+            Navigator.of(context).pushReplacement(
+              PageRouteBuilder<void>(
+                pageBuilder: (context, animation, secondaryAnimation) => next,
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                transitionDuration: const Duration(milliseconds: 450),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../ads/ad_service.dart';
 import '../theme/app_colors.dart';
 
 class FormatCheckerScreen extends StatefulWidget {
@@ -49,7 +50,13 @@ class _FormatCheckerScreenState extends State<FormatCheckerScreen> {
             label: 'Format',
             value: _format,
             items: _formats,
-            onChanged: (v) => setState(() => _format = v ?? _format),
+            onChanged: (v) {
+              if (v == null || v == _format) return;
+              AdService.instance.showInterstitialIfReady().then((_) {
+                if (!mounted) return;
+                setState(() => _format = v);
+              });
+            },
           ),
           const SizedBox(height: 16),
           _LabeledDropdown(

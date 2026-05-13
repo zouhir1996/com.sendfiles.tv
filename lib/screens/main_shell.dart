@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../ads/ad_service.dart';
+import '../ads/main_banner_ad.dart';
 import '../widgets/sfttv_logo.dart';
 import 'home_dashboard.dart';
+import 'guides_screen.dart';
 import 'settings_screen.dart';
 import 'tools_hub_screen.dart';
-import 'guides_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -32,12 +34,16 @@ class _MainShellState extends State<MainShell> {
             IconButton(
               tooltip: 'Settings',
               icon: const Icon(Icons.settings_outlined),
-              onPressed: () {
-                Navigator.of(context).push<void>(
+              onPressed: () async {
+                await AdService.instance.showRewardedThen(() {});
+                if (!context.mounted) return;
+                await Navigator.of(context).push<void>(
                   MaterialPageRoute<void>(
                     builder: (_) => const SettingsScreen(),
                   ),
                 );
+                if (!context.mounted) return;
+                await AdService.instance.showInterstitialIfReady();
               },
             ),
           ],
@@ -58,17 +64,29 @@ class _MainShellState extends State<MainShell> {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
         ),
-        body: IndexedStack(
-          index: _index,
-          children: const [
-            HomeDashboard(),
-            ToolsHubScreen(),
-            GuidesScreen(),
+        body: Column(
+          children: [
+            Expanded(
+              child: IndexedStack(
+                index: _index,
+                children: const [
+                  HomeDashboard(),
+                  ToolsHubScreen(),
+                  GuidesScreen(),
+                ],
+              ),
+            ),
+            const MainBannerAd(),
           ],
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: _index,
-          onDestinationSelected: (i) => setState(() => _index = i),
+          onDestinationSelected: (i) async {
+            if (i == _index) return;
+            await AdService.instance.showRewardedThen(() {
+              setState(() => _index = i);
+            });
+          },
           destinations: const [
             NavigationDestination(
               icon: Icon(Icons.home_outlined),

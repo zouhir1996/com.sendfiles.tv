@@ -78,9 +78,7 @@ class LocalFileServer {
       return;
     }
 
-    if (segs.length < 3 ||
-        segs[0] != _routePrefix ||
-        segs[1] != token) {
+    if (segs.length < 3 || segs[0] != _routePrefix || segs[1] != token) {
       request.response.statusCode = HttpStatus.notFound;
       await request.response.close();
       return;
@@ -118,7 +116,9 @@ class LocalFileServer {
         '<style>body{font-family:system-ui,-apple-system,sans-serif;padding:16px;'
         'background:#12162d;color:#e8f4ff}a{color:#4fc3f7}li{margin:10px 0}</style>',
       )
-      ..write('</head><body><h1>Files on this iPhone</h1><p>Tap a link to download.</p><ul>');
+      ..write(
+        '</head><body><h1>Files on this iPhone</h1><p>Tap a link to download.</p><ul>',
+      );
 
     for (var i = 0; i < _paths.length; i++) {
       final name = htmlEscape.convert(p.basename(_paths[i]));

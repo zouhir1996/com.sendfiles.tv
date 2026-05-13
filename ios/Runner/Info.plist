@@ -28,8 +28,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-8351181326687621~1733042192</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>This app runs a temporary file server on your Wi‑Fi so your TV or another device can download the files you choose. Local network access is only used while sharing is active.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Send files to TV needs access to your photo library so you can choose photos and videos to share over Wi‑Fi to your TV or browser. We only use the items you select.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

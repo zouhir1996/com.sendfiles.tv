@@ -9,6 +9,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../services/local_file_server.dart';
 import '../theme/app_colors.dart';
 import '../util/lan_address.dart';
+import '../ads/ad_service.dart';
 
 /// Serves selected files over HTTP on the LAN so a TV browser (or any device) can download them.
 class WifiSendScreen extends StatefulWidget {
@@ -18,7 +19,8 @@ class WifiSendScreen extends StatefulWidget {
   State<WifiSendScreen> createState() => _WifiSendScreenState();
 }
 
-class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObserver {
+class _WifiSendScreenState extends State<WifiSendScreen>
+    with WidgetsBindingObserver {
   final List<String> _paths = [];
   LocalFileServer? _server;
   String? _hostIp;
@@ -76,6 +78,7 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
   }
 
   Future<void> _pickFiles() async {
+    await AdService.instance.showInterstitialIfReady();
     setState(() => _error = null);
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -130,7 +133,8 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
       if (server.fileCount == 0) {
         setState(() {
           _busy = false;
-          _error = 'No readable files were found. Try picking again from the Files app.';
+          _error =
+              'No readable files were found. Try picking again from the Files app.';
         });
         return;
       }
@@ -165,9 +169,9 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
     if (url == null) return;
     await Clipboard.setData(ClipboardData(text: url));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Link copied')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Link copied')));
   }
 
   @override
@@ -180,10 +184,7 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
         title: const Text('Wi‑Fi send to TV'),
         actions: [
           if (_paths.isNotEmpty && !sharing)
-            TextButton(
-              onPressed: _clearFiles,
-              child: const Text('Clear'),
-            ),
+            TextButton(onPressed: _clearFiles, child: const Text('Clear')),
         ],
       ),
       body: ListView(
@@ -225,9 +226,9 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
             Text(
               'Selected (${_paths.length})',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             ..._paths.map(
@@ -244,7 +245,9 @@ class _WifiSendScreenState extends State<WifiSendScreen> with WidgetsBindingObse
           ],
           const SizedBox(height: 20),
           FilledButton(
-            onPressed: (_busy || sharing || _paths.isEmpty) ? null : _startSharing,
+            onPressed: (_busy || sharing || _paths.isEmpty)
+                ? null
+                : _startSharing,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
