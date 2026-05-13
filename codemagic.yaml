@@ -7,7 +7,7 @@ workflows:
       flutter: 3.41.0
       ios_signing:
         provisioning_profiles:
-          - provisioning_hatunnel
+          - provisioning_sendfiles
         certificates:
           - Certificate_zouhir
     scripts:
